@@ -79,7 +79,15 @@ class LoginSerializer(serializers.Serializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ['image', 'description']
+
+    def to_representation(self, instance):
+        representation = super(PostSerializer, self).to_representation(instance)
+        representation['author'] = instance.user.username
+        representation['likes'] = instance.likes.count()
+        representation['id'] = instance.id
+        return representation
+
 
 
 class FavoritesPostsSerializer(serializers.ModelSerializer):
