@@ -5,5 +5,5 @@ from insta.urls import urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('insta.urls'),
+    path('api/', include('insta.urls')),
 ]
