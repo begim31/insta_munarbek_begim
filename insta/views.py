@@ -1,13 +1,15 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, filters
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
-from .models import Post, FavoritesPosts
-from .serializers import UserRegisterSerializer, LoginSerializer, PostSerializer, FavoritesPostsSerializer
+from .models import Post, FavoritesPosts, Comments, Followers
+from .serializers import UserRegisterSerializer, LoginSerializer, PostSerializer, FavoritesPostsSerializer, \
+    CommentsSerializer, FollowersSerializer
 from rest_framework.response import Response
 from .permissions import IsOwnerOrReadOnly
+
 
 
 class UserRegister(generics.CreateAPIView):
@@ -29,6 +31,8 @@ class Logout(APIView):
 
 
 class PostList(generics.ListCreateAPIView):
+    search_fields = ['description', ]
+    filter_backends = (filters.SearchFilter,)
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -55,3 +59,14 @@ class FavoritesPostsDestroy(generics.DestroyAPIView):
     queryset = FavoritesPosts.objects.all()
     serializer_class = FavoritesPostsSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+
+
+class CommentsList(generics.ListCreateAPIView):
+    queryset = Comments.objects.all()
+    serializer_class = CommentsSerializer
+
+
+class FollowersList(generics.ListCreateAPIView):
+    queryset = Followers.objects.all()
+    serializer_class = FollowersSerializer
+
