@@ -2,7 +2,7 @@ from .functions import validateEmail
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserProfile, Post, FavoritesPosts
+from .models import UserProfile, Post, FavoritesPosts, Comments, Followers
 from django.shortcuts import get_object_or_404
 
 
@@ -79,7 +79,7 @@ class LoginSerializer(serializers.Serializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['image', 'description']
+        fields = '__all__'
 
 
 class FavoritesPostsSerializer(serializers.ModelSerializer):
@@ -104,3 +104,15 @@ class FavoritesPostsSerializer(serializers.ModelSerializer):
             FavoritePost.save()
 
             return FavoritePost
+
+
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comments
+        fields = ['comments',]
+
+
+class FollowersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Followers
+        fields = ['followers',]
