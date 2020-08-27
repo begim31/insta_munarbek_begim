@@ -79,15 +79,15 @@ class LoginSerializer(serializers.Serializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['image', 'description']
+        fields = ['image', 'description', 'comments']
 
     def to_representation(self, instance):
         representation = super(PostSerializer, self).to_representation(instance)
         representation['author'] = instance.user.username
         representation['likes'] = instance.likes.count()
         representation['id'] = instance.id
+        representation['comments'] = CommentsSerializer(instance.comments, many=True).data
         return representation
-
 
 
 class FavoritesPostsSerializer(serializers.ModelSerializer):
@@ -117,10 +117,28 @@ class FavoritesPostsSerializer(serializers.ModelSerializer):
 class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comments
-        fields = ['comments',]
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super(CommentsSerializer, self).to_representation(instance)
+        representation = representation.get('description')
+        return representation
+
 
 
 class FollowersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Followers
         fields = ['followers',]
+
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['user'] = instance.user.username
+        representation['post'] = PostSerializer(instance.user.posts, many=True).data
+        return representation
