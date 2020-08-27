@@ -15,7 +15,7 @@ class UserProfile(models.Model):
 
 
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     image = models.ImageField(upload_to='images', max_length=255, null=False)
     description = models.TextField()
 
@@ -29,7 +29,7 @@ class FavoritesPosts(models.Model):
 
 
 class Comments(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
 
