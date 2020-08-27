@@ -2,8 +2,26 @@ from .functions import validateEmail
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserProfile, Post, FavoritesPosts, Comments, Followers
+from .models import UserProfile, Post, FavoritesPosts, Comments, Follow, Tag
 from django.shortcuts import get_object_or_404
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.followers.all().count() > 0:
+            followings_object_list = instance.followers.filter(follower=instance)
+            followings_list = [follow.user.username for follow in followings_object_list]
+            representation['followings'] = followings_list
+        if instance.followings.all().count() > 0:
+            followers_object_list = instance.followings.filter(user=instance)
+            followers_list = [follow.follower.username for follow in followers_object_list]
+            representation['followers'] = followers_list
+        return representation
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -79,16 +97,20 @@ class LoginSerializer(serializers.Serializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['image', 'description']
+        fields = ['image', 'description', 'tags']
 
     def to_representation(self, instance):
         representation = super(PostSerializer, self).to_representation(instance)
         representation['author'] = instance.user.username
         representation['likes'] = instance.likes.count()
         representation['id'] = instance.id
+
         return representation
 
-
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['title']
 
 class FavoritesPostsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -120,7 +142,28 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = ['comments',]
 
 
-class FollowersSerializer(serializers.ModelSerializer):
+class FollowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Followers
-        fields = ['followers',]
+        model = Follow
+        fields = ['user']
+
+    def create(self, validated_data):
+        user_to_follow = validated_data.get('user')
+        user_who_is_following = self.context['request'].user
+
+        if Follow.objects.filter(user=user_to_follow, follower=user_who_is_following).exists():
+            msg = "This user is already followings"
+            raise serializers.ValidationError(msg)
+        elif user_who_is_following.id == user_to_follow.id:
+            msg = "User cannot follow itself"
+            raise serializers.ValidationError(msg)
+        else:
+
+            follow = Follow.objects.create(
+                user=user_to_follow,
+                follower=user_who_is_following
+            )
+
+            # follow.save()
+
+            return follow

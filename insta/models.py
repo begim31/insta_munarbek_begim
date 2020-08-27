@@ -18,10 +18,13 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='images', max_length=255, null=False)
     description = models.TextField()
+    tags = models.ManyToManyField('Tag', blank=True)
 
     def __str__(self):
         return self.description
 
+class Tag(models.Model):
+    title = models.SlugField(max_length=100, primary_key=True)
 
 class FavoritesPosts(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
@@ -39,9 +42,9 @@ class FavoritesComments(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-class Followers(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followings')
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

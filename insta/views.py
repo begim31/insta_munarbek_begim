@@ -4,9 +4,9 @@ from django.contrib.auth import logout
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
-from .models import Post, FavoritesPosts, Comments, Followers
+from .models import Post, FavoritesPosts, Comments, Follow
 from .serializers import UserRegisterSerializer, LoginSerializer, PostSerializer, FavoritesPostsSerializer, \
-    CommentsSerializer, FollowersSerializer
+    CommentsSerializer, FollowSerializer, UserSerializer
 from rest_framework.response import Response
 from .permissions import IsOwnerOrReadOnly
 
@@ -71,9 +71,15 @@ class FavoritesPostsDestroy(generics.DestroyAPIView):
 class CommentsList(generics.ListCreateAPIView):
     queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
+    permission_classes = (IsAuthenticated, )
 
 
 class FollowersList(generics.ListCreateAPIView):
-    queryset = Followers.objects.all()
-    serializer_class = FollowersSerializer
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    permission_classes = (IsAuthenticated,)
 
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

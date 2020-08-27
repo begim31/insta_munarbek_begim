@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FavoritesPostsList, FavoritesPostsDestroy, CommentsList, FollowersList
+from .views import FavoritesPostsList, FavoritesPostsDestroy, CommentsList, FollowersList, UserListView
 from insta.views import UserRegister, CustomAuthToken, Logout, PostList, PostDetail, FavoritesPostsList
 
 urlpatterns = [
@@ -12,4 +12,6 @@ urlpatterns = [
     path('favourites/<pk>/', FavoritesPostsDestroy.as_view(), name='favourites_destroy'),
     path('comments/<int:pk>/', CommentsList.as_view(), name='comments'),
     path('followers/', FollowersList.as_view(), name='followers'),
+    path('users/', UserListView.as_view(), name='users'),
+    # path('hashtag/', HashTagList.as_view(), name='hashtags'),
 ]
