@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Post, UserProfile, FavoritesPosts, FavoritesComments, Comments, Follow, Tag
 
-# Register your models here.
-admin.site.register(Post)
+from .models import (Post, UserProfile, FavouritePost, Comment, Follow, Tag, Image)
+
+
 admin.site.register(UserProfile)
-admin.site.register(FavoritesPosts)
-admin.site.register(FavoritesComments)
-admin.site.register(Comments)
-admin.site.register(Follow)
+admin.site.register(Post)
+admin.site.register(Image)
 admin.site.register(Tag)
+admin.site.register(FavouritePost)
+admin.site.register(Follow)
+admin.site.register(Comment)
